@@ -1,0 +1,11 @@
+        console.log(data)
+        switch(data.action){
+            case 'POST': {
+                socket.broadcast.emit('receivedMessage', 'Você usou a Rota Post')
+            }
+            break;
+            case 'GET': {
+                socket.broadcast.emit('receivedMessage', 'Você usou a Rota Get')
+            }
+
+        }
