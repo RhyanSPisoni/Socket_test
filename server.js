@@ -36,32 +36,11 @@ io.on('connection', socket => {
     console.log(`Socket conectado: ${socket.id}`);
     socket.emit('previousMessages', messages);
 
-    socket.on('sendMessage', data => {
+    //Inserir Máquina Virtual
+    socket.on('sendMessage', data =>{
         //console.log(data.value)
         let a = 'TESTE'
         switch (data.action) {
-            
-            //Método Get - Pegar informações do Banco de Dados
-            case 'GET':
-
-                console.log("START GET");
-                console.log("START GET");
-                console.log("START GET");
-                console.log("START GET");
-
-                (async function () {
-                    try {
-                      console.log("sql connecting......")
-                      let pool = await mssql.connect(sqlConfig)
-                      let result = await pool.request()
-                        .query('select * from virtual_machine')
-                      console.log(result)
-
-                    } catch (err) {
-                        console.log(err);
-                    }
-                  })()
-
             //Método Post - Inserir dados ao Banco de Dados mssql(SQL SERVER)
             case 'POST':
 
@@ -85,52 +64,7 @@ io.on('connection', socket => {
                         console.log(err);
                     }
                 })()
-
-
                 break;
-
-                
-            //Método Delete - Deletar dados do Banco de Dados
-            case 'DELETE':
-                console.log("START DELETE");
-                console.log("START DELETE");
-                console.log("START DELETE");
-                console.log("START DELETE");
-
-                (async function () {
-                    try {
-                        console.log("sql connecting......")
-                        let pool = await mssql.connect(sqlConfig)
-                        let result = await pool.request()
-                            .query(`DELETE from virtual_machine where id_vm = '${data.value.idVm}'`);
-                        // subject is my database table name - Funcional
-                        console.log(result)
-
-                    } catch (err) {
-                        console.log(err);
-                    }
-                })()
-
-            //Método Update - Atualizar dados do Banco de Dados
-            case 'UPDATE':
-                console.log("START UPDATE");
-                console.log("START UPDATE");
-                console.log("START UPDATE");
-                console.log("START UPDATE");
-
-                (async function () {
-                    try {
-                        console.log("sql connecting......")
-                        let pool = await mssql.connect(sqlConfig)
-                        let result = await pool.request()
-                            .query(`UPDATE virtual_machine set ds_address = '${data.value.ipAddress}', fl_status = '${data.value.status}', ds_abbr = '${data.value.abbr}' where id_vm = '${data.value.idVm}'`);
-                        // subject is my database table name - Funcional
-                        console.log(result)
-
-                    } catch (err) {
-                        console.log(err);
-                    }
-                })()
         }
 
         console.log(data);
@@ -141,7 +75,6 @@ io.on('connection', socket => {
         })
     });
 
-    
     //Mostrar Máquina Virtual
     socket.on('getMachine', data =>{
         switch (data.action) {
@@ -170,7 +103,7 @@ io.on('connection', socket => {
         }
     });
     
-    //Atualizar uma Máquina Virtual
+    //Atualizar Máquina Virtual
     socket.on('patchMachine', data =>{
         switch (data.action) {
             //Método Update - Atualizar dados do Banco de Dados
@@ -198,7 +131,7 @@ io.on('connection', socket => {
 
     });
 
-    //Deletar uma Máquina Virtual
+    //Deletar Máquina Virtual
     socket.on('deleteMachine', data =>{
         switch (data.action) {
             //Método Delete - Deletar dados do Banco de Dados
@@ -222,7 +155,6 @@ io.on('connection', socket => {
                     }
                 })()
                 break;
-            
         }
 
     });
