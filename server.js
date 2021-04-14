@@ -75,8 +75,8 @@ io.on('connection', socket => {
                         console.log("sql connecting......")
                         let pool = await mssql.connect(sqlConfig)
                         let result = await pool.request()
-                            .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values 
-                                ('${data.value.ipAddress}','${data.value.status}','${data.value.abbr}'); 
+                            .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values
+                             ('${data.value.ipAddress}','${data.value.status}','${data.value.abbr}'); 
                             INSERT INTO content (ds_content) values ('${data.value.contents}')`); 
                         // subject is my database table name - Funcional
                         console.log(result)
@@ -89,6 +89,7 @@ io.on('connection', socket => {
 
                 break;
 
+                
             //Método Delete - Deletar dados do Banco de Dados
             case 'DELETE':
                 console.log("START DELETE");
@@ -138,6 +139,92 @@ io.on('connection', socket => {
         socket.on('error', err => {
             console.log(err)
         })
+    });
+
+    
+    //Mostrar Máquina Virtual
+    socket.on('getMachine', data =>{
+        switch (data.action) {
+            //Método Get - Pegar informações do Banco de Dados
+            case 'GET':
+
+                console.log("START GET");
+                console.log("START GET");
+                console.log("START GET");
+                console.log("START GET");
+
+                (async function () {
+                    try {
+                      console.log("sql connecting......")
+                      let pool = await mssql.connect(sqlConfig)
+                      let result = await pool.request()
+                        .query('select * from virtual_machine')
+                      console.log(result)
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                  })()
+                  break;
+
+        }
+    });
+    
+    //Atualizar uma Máquina Virtual
+    socket.on('patchMachine', data =>{
+        switch (data.action) {
+            //Método Update - Atualizar dados do Banco de Dados
+            case 'UPDATE':
+                console.log("START UPDATE");
+                console.log("START UPDATE");
+                console.log("START UPDATE");
+                console.log("START UPDATE");
+
+                (async function () {
+                    try {
+                        console.log("sql connecting......")
+                        let pool = await mssql.connect(sqlConfig)
+                        let result = await pool.request()
+                            .query(`UPDATE virtual_machine set ds_address = '${data.value.ipAddress}', fl_status = '${data.value.status}', ds_abbr = '${data.value.abbr}' where id_vm = '${data.value.idVm}'`);
+                        // subject is my database table name - Funcional
+                        console.log(result)
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                })()
+                break;
+        }
+
+    });
+
+    //Deletar uma Máquina Virtual
+    socket.on('deleteMachine', data =>{
+        switch (data.action) {
+            //Método Delete - Deletar dados do Banco de Dados
+            case 'DELETE':
+                console.log("START DELETE");
+                console.log("START DELETE");
+                console.log("START DELETE");
+                console.log("START DELETE");
+
+                (async function () {
+                    try {
+                        console.log("sql connecting......")
+                        let pool = await mssql.connect(sqlConfig)
+                        let result = await pool.request()
+                            .query(`DELETE from virtual_machine where id_vm = '${data.value.idVm}'`);
+                        // subject is my database table name - Funcional
+                        console.log(result)
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                })()
+                break;
+            
+        }
+
     });
 });
 
