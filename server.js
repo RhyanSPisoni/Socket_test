@@ -14,14 +14,11 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(cors());
 
-
-const vmController = require('./controller/vm-controller');
-const { SSL_OP_NO_QUERY_MTU } = require('constants');
 let messages = [];
 
 var sqlConfig = {
     server: "BANDEIRANTE\\SQLEXPRESS",
-    database: "Controller_VM" ,
+    database: "Controller_VM",
     user: "sa",
     password: "zx862",
     connectionTimeout: 30000,
@@ -41,45 +38,101 @@ io.on('connection', socket => {
 
     socket.on('sendMessage', data => {
         //console.log(data.value)
-        let a = 'fadwadwa'
+        let a = 'TESTE'
         switch (data.action) {
-            case 'POST':
+            
+            //Método Get - Pegar informações do Banco de Dados
+            case 'GET':
 
-                // (async function () {
-                //     try {
-                //       console.log("sql connecting......")
-                //       let pool = await mssql.connect(sqlConfig)
-                //       let result = await pool.request()
-                //         .query('select * from virtual_machine')  // subject is my database table name - Funcional
-                //       console.log(result)
-                  
-                //     } catch (err) {
-                //       console.log(err);
-                //     }
-                //   })()        
-
-                console.log("START");
-                console.log("START");
-                console.log("START");
-                console.log("START");
+                console.log("START GET");
+                console.log("START GET");
+                console.log("START GET");
+                console.log("START GET");
 
                 (async function () {
                     try {
                       console.log("sql connecting......")
                       let pool = await mssql.connect(sqlConfig)
                       let result = await pool.request()
-                        .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values ('${data.value.ipAddress}','${data.value.status}','${data.value.abbr}')`);
-                          // subject is my database table name - Funcional
+                        .query('select * from virtual_machine')
                       console.log(result)
-                  
+
                     } catch (err) {
-                      console.log(err);
+                        console.log(err);
                     }
-                  })()      
-                  
-                  
+                  })()
+
+            //Método Post - Inserir dados ao Banco de Dados mssql(SQL SERVER)
+            case 'POST':
+
+                console.log("START POST");
+                console.log("START POST");
+                console.log("START POST");
+                console.log("START POST");
+
+                (async function () {
+                    try {
+                        console.log("sql connecting......")
+                        let pool = await mssql.connect(sqlConfig)
+                        let result = await pool.request()
+                            .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values 
+                                ('${data.value.ipAddress}','${data.value.status}','${data.value.abbr}'); 
+                            INSERT INTO content (ds_content) values ('${data.value.contents}')`); 
+                        // subject is my database table name - Funcional
+                        console.log(result)
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                })()
+
+
+                break;
+
+            //Método Delete - Deletar dados do Banco de Dados
+            case 'DELETE':
+                console.log("START DELETE");
+                console.log("START DELETE");
+                console.log("START DELETE");
+                console.log("START DELETE");
+
+                (async function () {
+                    try {
+                        console.log("sql connecting......")
+                        let pool = await mssql.connect(sqlConfig)
+                        let result = await pool.request()
+                            .query(`DELETE from virtual_machine where id_vm = '${data.value.idVm}'`);
+                        // subject is my database table name - Funcional
+                        console.log(result)
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                })()
+
+            //Método Update - Atualizar dados do Banco de Dados
+            case 'UPDATE':
+                console.log("START UPDATE");
+                console.log("START UPDATE");
+                console.log("START UPDATE");
+                console.log("START UPDATE");
+
+                (async function () {
+                    try {
+                        console.log("sql connecting......")
+                        let pool = await mssql.connect(sqlConfig)
+                        let result = await pool.request()
+                            .query(`UPDATE virtual_machine set ds_address = '${data.value.ipAddress}', fl_status = '${data.value.status}', ds_abbr = '${data.value.abbr}' where id_vm = '${data.value.idVm}'`);
+                        // subject is my database table name - Funcional
+                        console.log(result)
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                })()
         }
-        // console.log(data)
+
+        console.log(data);
         messages.push(data);
         socket.emit('receivedMessage', { a });
         socket.on('error', err => {
