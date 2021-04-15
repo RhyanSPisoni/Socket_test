@@ -37,7 +37,7 @@ io.on('connection', socket => {
     socket.emit('previousMessages', messages);
 
     //Inserir Máquina Virtual
-    socket.on('sendMessage', data =>{
+    socket.on('sendMessage', data => {
         //console.log(data.value)
         let a = 'TESTE'
         switch (data.action) {
@@ -50,25 +50,50 @@ io.on('connection', socket => {
                 console.log("START POST");
 
                 (async function () {
+                    // try {
+                    //     console.log("sql connecting......")
+                    //     let pool = await mssql.connect(sqlConfig)
+                    //     let result = await pool.request()
+                    //         .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values
+                    //          ('${data.value.ipAddress}','${data.value.status}','${data.value.abbr}'); 
+                    //         INSERT INTO content (ds_content) values ('${data.value.contents}')`); 
+                    //     // subject is my database table name - Funcional
+                    //     console.log(result)
+
+                    // } catch (err) {
+                    //     console.log(err);
+                    // }
+
+
                     try {
                         console.log("sql connecting......")
                         let pool = await mssql.connect(sqlConfig)
                         let result = await pool.request()
-                            .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values
-                             ('${data.value.ipAddress}','${data.value.status}','${data.value.abbr}'); 
-                            INSERT INTO content (ds_content) values ('${data.value.contents}')`); 
-                        // subject is my database table name - Funcional
-                        console.log(result)
-
+                            .query('select * from virtual_machine')
+                        //console.log(result);
+                        socket.emit('previousMessages', { result });
                     } catch (err) {
                         console.log(err);
                     }
+
+                    // try {
+                    //     console.log("sql SHOW")
+                    //     let pool = await mssql.connect(sqlConfig)
+                    //     let result = await pool.request()
+                    //       //.query('select count(id_vm) from virtual_machine')
+                    //       .query('select count( from virtual_machine')
+                    //     console.log(result.recordset);
+                    //     //recordset
+
+                    //   } catch (err) {
+                    //       console.log(err);
+                    //   }
                 })()
                 break;
         }
 
         console.log(data);
-        messages.push(data);
+        //messages.push(data);
         socket.emit('receivedMessage', { a });
         socket.on('error', err => {
             console.log(err)
@@ -76,7 +101,7 @@ io.on('connection', socket => {
     });
 
     //Mostrar Máquina Virtual
-    socket.on('getMachine', data =>{
+    socket.on('getMachine', data => {
         switch (data.action) {
             //Método Get - Pegar informações do Banco de Dados
             case 'GET':
@@ -88,23 +113,23 @@ io.on('connection', socket => {
 
                 (async function () {
                     try {
-                      console.log("sql connecting......")
-                      let pool = await mssql.connect(sqlConfig)
-                      let result = await pool.request()
-                        .query('select * from virtual_machine')
-                      console.log(result)
+                        console.log("sql connecting......")
+                        let pool = await mssql.connect(sqlConfig)
+                        let result = await pool.request()
+                            .query('select * from virtual_machine')
+                        console.log(result)
 
                     } catch (err) {
                         console.log(err);
                     }
-                  })()
-                  break;
+                })()
+                break;
 
         }
     });
-    
+
     //Atualizar Máquina Virtual
-    socket.on('patchMachine', data =>{
+    socket.on('patchMachine', data => {
         switch (data.action) {
             //Método Update - Atualizar dados do Banco de Dados
             case 'UPDATE':
@@ -132,7 +157,7 @@ io.on('connection', socket => {
     });
 
     //Deletar Máquina Virtual
-    socket.on('deleteMachine', data =>{
+    socket.on('deleteMachine', data => {
         switch (data.action) {
             //Método Delete - Deletar dados do Banco de Dados
             case 'DELETE':
