@@ -1,5 +1,6 @@
 const http = require('http');
 const app = require('./app');
+//const app = require('express');
 const port = process.env.PORT || 5200;
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
@@ -10,11 +11,10 @@ const io = require('socket.io')(server, {
 const cors = require('cors');
 
 const mssql = require('mssql')
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
+//app.engine('html', require('ejs').renderFile);
+//app.set('view engine', 'html');
 app.use(cors());
 
-let messages = [];
 
 var sqlConfig = {
     server: "BANDEIRANTE\\SQLEXPRESS",
@@ -33,9 +33,22 @@ var sqlConfig = {
 
 io.on('connection', socket => {
 
-    console.log(`Socket conectado: ${socket.id}`);
-    socket.emit('previousMessages', messages);
+    (async function () {
+        try {
+            console.log("sql connecting......")
+            let pool = await mssql.connect(sqlConfig)
+            let result = await pool.request()
+                .query('select * from virtual_machine')
+            //console.log(result);
+            socket.emit('previousMessages',  result );
+        } catch (err) {
+            console.log(err);
+        }
+    })()
 
+
+    console.log(`Socket conectado: ${socket.id}`);
+    
     //Inserir Máquina Virtual
     socket.on('sendMessage', data => {
         //console.log(data.value)
@@ -71,7 +84,7 @@ io.on('connection', socket => {
                         let result = await pool.request()
                             .query('select * from virtual_machine')
                         //console.log(result);
-                        socket.emit('previousMessages', { result });
+                        socket.emit('previousMessages',  result );
                     } catch (err) {
                         console.log(err);
                     }
@@ -100,7 +113,6 @@ io.on('connection', socket => {
         })
     });
 
-    //Mostrar Máquina Virtual
     socket.on('getMachine', data => {
         switch (data.action) {
             //Método Get - Pegar informações do Banco de Dados
