@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const vmController = require('../controller/vm-controller.js');
-
+/** 
+ * Rotas HTTP
+*/
 //Mostrar todas as máquinas virtuais
 router.get('/', vmController.getVM);
 

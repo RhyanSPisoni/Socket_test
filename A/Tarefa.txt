@@ -1,5 +1,0 @@
-*Pegar Todos
-Pegar por preço
-Criar
-Alterar
-Excluir
