@@ -11,7 +11,8 @@ const io = require('socket.io')(server, {
 });
 const cors = require('cors');
 
-const mssql = require('mssql')
+const mssql = require('mssql');
+const { Console } = require('console');
 //app.engine('html', require('ejs').renderFile);
 //app.set('view engine', 'html');
 app.use(cors());
@@ -33,9 +34,44 @@ var sqlConfig = {
 };
 
 io.on('connection', socket => {
+    let result;
+
+    (async function () {
+        try {
+            console.log("Show Data")
+            let pool = await mssql.connect(sqlConfig)
+            result = await pool.request()
+                .query(`select * from virtual_machine`)
+            //console.log(result)
+
+            socket.emit('previousMessages', result);
+        } catch (err) {
+            console.log(err);
+        }
+    })()
 
     console.log(`Socket conectado: ${socket.id}`);
+    //Deletar Máquina Virtual
+    socket.on('deleteMachine', data => {
+        (async function () {
+            try {
+                console.log("sql connecting...................")
+                let pool = await mssql.connect(sqlConfig)
+                await pool.request()
+                    .query(`DELETE from virtual_machine where id_vm = '${data.idVm}'`);
+                // subject is my database table name - Funcional                
+                //console.log(result)
+                let vmsLeft = await pool.request()
+                    .query('select * from virtual_machine')
+                console.log(vmsLeft.recordset.length)
+                socket.broadcast.emit('previousMessages', vmsLeft);
 
+            } catch (err) {
+                //console.log(err);
+            }
+        })()
+
+    });
 
     //Inserir Máquina Virtual
     socket.on('sendMessage', data => {
@@ -51,8 +87,8 @@ io.on('connection', socket => {
                 let pool = await mssql.connect(sqlConfig)
                 let result = await pool.request()
                     .query(`INSERT INTO virtual_machine (ds_address, fl_status, ds_abbr) values
-                              ('${data.ipAddress}','${data.status}','${data.abbr}'); 
-                             INSERT INTO content (ds_content) values ('${data.contents}')`);
+                                  ('${data.ipAddress}','${data.status}','${data.abbr}'); 
+                                 INSERT INTO content (ds_content) values ('${data.contents}')`);
                 // subject is my database table name - Funcional
                 console.log(result)
 
@@ -91,49 +127,8 @@ io.on('connection', socket => {
                         console.log(err);
                     }
                 })()
-                break;
         }
-
     });
-
-    //Deletar Máquina Virtual
-    socket.on('deleteMachine', data => {
-        //Método Delete - Deletar dados do Banco de Dados
-        console.log("START DELETE");
-        console.log("START DELETE");
-        console.log("START DELETE");
-        console.log("START DELETE");
-        (async function () {
-            try {
-                console.log("sql connecting......")
-                let pool = await mssql.connect(sqlConfig)
-                let result = await pool.request()
-                    .query(`DELETE from virtual_machine where id_vm = '${data.idVm}'`);
-                // subject is my database table name - Funcional
-                socket.emit('previousMessages',  result );
-                console.log(result)
-
-            } catch (err) {
-                console.log(err);
-            }
-        })()
-        console.log(data);
-    });
-
-
-
-    (async function () {
-        try {
-            console.log("sql connecting......")
-            let pool = await mssql.connect(sqlConfig)
-            let result = await pool.request()
-                .query(`select * from virtual_machine`)
-            //console.log(result);
-            socket.emit('previousMessages', result);
-        } catch (err) {
-            console.log(err);
-        }
-    })()
 });
 
 server.listen(port);
